@@ -1,0 +1,2 @@
+- I requested ChatGPT to return a TLDR; version of Task 2 in README
+- All codes are handwritten and tested via the test cases in the test folder
