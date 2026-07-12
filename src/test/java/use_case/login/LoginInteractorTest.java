@@ -92,4 +92,35 @@ class LoginInteractorTest {
         LoginInputBoundary interactor = new LoginInteractor(userRepository, failurePresenter);
         interactor.execute(inputData);
     }
+
+    @Test
+    void successUserLoggedInTest() {
+        LoginInputData inputData = new LoginInputData("Paul", "password");
+        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+
+        UserFactory factory = new CommonUserFactory();
+        User user = factory.create("Paul", "password");
+        userRepository.save(user);
+
+        // First, test to see currentUsername is Null by default.
+        assertNull(userRepository.getCurrentUsername());
+
+        LoginOutputBoundary loginPresenter = new LoginOutputBoundary() {
+            @Override
+            public void prepareSuccessView(LoginOutputData outputData) {
+                assertEquals("Paul", user.getName());
+            }
+
+            @Override
+            public void prepareFailView(String errorMessage) {
+                // The fail case should never be reached since the user should be created successfully
+                fail("Use case failure is unexpected.");
+            }
+        };
+
+        LoginInputBoundary interactor = new LoginInteractor(userRepository, loginPresenter);
+        interactor.execute(inputData);
+        // Check to see if currentUsername was set successfully
+        assertEquals("Paul", userRepository.getCurrentUsername());
+    }
 }
